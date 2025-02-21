@@ -3,7 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 // Middleware
@@ -42,7 +42,7 @@ async function run() {
       const result = await taskCollection.insertOne(task);
       res.send(result);
     })
-
+    // get all tasks
     app.get('/tasks',async(req,res) => {
         try{
             const tasks = await taskCollection.find().toArray();
@@ -52,6 +52,16 @@ async function run() {
             res.send({ error: 'Failed to fetch tasks'});
         }
     });
+
+    //update a task
+    app.put('/tasks/:id', async(req,res) => {
+      const id = req.params.id;
+      const updatedTask = req.body;
+      const filter = { _id: new ObjectId(id)};
+      const updateDoc = { $set: updatedTask};
+      const result = await taskCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
