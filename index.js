@@ -10,7 +10,7 @@ const { MongoClient, ServerApiVersion } = require('mongodb');
 app.use(cors());
 app.use(express.json());
 
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.c4vcn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
+const uri = (`mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.c4vcn.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`);
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -35,6 +35,13 @@ async function run() {
 
     // database collection
     const taskCollection = client.db('taskManager').collection('tasks');
+    // create a task
+    app.post('/tasks', async(req,res) => {
+      const task = req.body;
+      task.timestamp = new Date();
+      const result = await taskCollection.insertOne(task);
+      res.send(result);
+    })
 
     app.get('/tasks',async(req,res) => {
         try{
@@ -59,5 +66,5 @@ app.get('/' , (req, res) => {
 })
 
 app.listen(port, () =>{
-    console.log(`Running at: ${port}`)
+    console.log(`Running at : ${port}`)
 })
