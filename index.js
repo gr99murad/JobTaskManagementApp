@@ -61,6 +61,13 @@ async function run() {
       const updateDoc = { $set: updatedTask};
       const result = await taskCollection.updateOne(filter, updateDoc);
       res.send(result);
+    });
+
+    // delete task
+    app.delete('/tasks/:id', async(req, res) => {
+      const id = req.params.id;
+      const result = await taskCollection.deleteOne({ _id: new ObjectId(id)});
+      res.send(result);
     })
   } finally {
     // Ensures that the client will close when you finish/error
