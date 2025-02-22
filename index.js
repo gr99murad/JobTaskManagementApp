@@ -35,6 +35,30 @@ async function run() {
 
     // database collection
     const taskCollection = client.db('taskManager').collection('tasks');
+    // store user details in database
+    const usersCollection = client.db('taskManager').collection('users');
+
+    app.post('/users',async(req,res) => {
+      const { uid, email, displayName} = req.body;
+
+      if(!uid || !email || !displayName){
+        return res.send({message: "Missing required user details"});
+      }
+
+      const filter = { uid: uid};
+      const updateDoc = {
+        $set: {
+          uid,
+          email,
+          displayName,
+          lastLogin: new Date(),
+        },
+      };
+      const options = { upsert: true};
+      const result = await usersCollection.updateOne(filter, updateDoc,options);
+
+      res.send(result);
+    })
     // create a task
     app.post('/tasks', async(req,res) => {
       const task = req.body;
