@@ -63,6 +63,7 @@ async function run() {
     app.post('/tasks', async(req,res) => {
       const task = req.body;
       task.timestamp = new Date();
+      task.order = 0; // initial order
       const result = await taskCollection.insertOne(task);
       res.send(result);
     })
@@ -86,6 +87,8 @@ async function run() {
       const result = await taskCollection.updateOne(filter, updateDoc);
       res.send(result);
     });
+
+    
 
     // delete task
     app.delete('/tasks/:id', async(req, res) => {
